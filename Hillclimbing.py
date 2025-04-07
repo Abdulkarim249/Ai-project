@@ -52,6 +52,7 @@ def printState(arr):
         print("]")
 
 def main():
+    global helperArray
     helperArray=generateCase()
     sudoku_grid=genrate()
     printState(helperArray)
