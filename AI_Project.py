@@ -4,6 +4,7 @@ import generator
 import Backtracking 
 import copy
 import GA
+import threading
 pg.init()
 
 difficulty = 35  # Default number of empty squares
@@ -162,7 +163,12 @@ def draw_fixed_numbers():
 
 
             
-
+def solver(function):
+    global sudoku_grid
+    sudoku_grid = function(sudoku_grid)
+    drawBoard()           # Redraw the board background and grid lines
+    draw_fixed_numbers()  # Redraw the fixed numbers
+    draw_numbers(1)        # Redraw all numbers
 
 def main():
     global sudoku_grid
@@ -220,16 +226,10 @@ def main():
 
                 
                 elif solve_bt_button.collidepoint(mouse_pos):
-                    sudoku_grid=Backtracking.solve(sudoku_grid)
-                    drawBoard()           # Redraw the board background and grid lines
-                    draw_fixed_numbers()  # Redraw the fixed (given) numbers
-                    draw_numbers(1)        # Redraw all the numbers (which now includes the solved cells)
+                    solver(Backtracking.solve)
                                 
                 elif solve_ga_button.collidepoint(mouse_pos):
-                    sudoku_grid = GA.solve(sudoku_grid)
-                    drawBoard()           # Redraw the board background and grid lines
-                    draw_fixed_numbers()  # Redraw the fixed numbers
-                    draw_numbers(1)        # Redraw all numbers
+                    solver(GA.solve)
 
 
             
