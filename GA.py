@@ -145,7 +145,7 @@ class GA:
     def createPopulation(self, size):#return 3D array
         population=[]
         for i in range(0,size):
-            while True:
+            for _ in range(5):
                 state = self.genrate()
                 fl = True
                 for st in population:
