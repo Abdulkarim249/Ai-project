@@ -117,13 +117,13 @@ def sudokuGenerator(k):
 
     return grid
 
-def generateCase():
+def generateCase(difficulty=35):
     
     # Seed the random number generator
     random.seed()
 
-    # Set the number of empty cells
-    # k = random.randint(30, 40)
-    k = 45
+
+    k = difficulty
+    # k = 60
     sudoku = sudokuGenerator(k)
     return sudoku
