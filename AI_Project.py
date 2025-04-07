@@ -56,7 +56,7 @@ def drawBoard():
             thickness = 4
         else:
             thickness = 1
-        pg.draw.line(screen, BLACK, (0, i * CELL_SIZE), (WIDTH, i * CELL_SIZE), thickness)  # Horizontal lines
+        pg.draw.line(screen, BLACK, (0, i * CELL_SIZE), (WIDTH, i * CELL_SIZE), thickness)  # Horizontal lines 
         pg.draw.line(screen, BLACK, (i * CELL_SIZE, 0), (i * CELL_SIZE, WIDTH), thickness)  # Vertical lines
         
                 
