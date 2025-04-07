@@ -2,6 +2,7 @@ import math
 import copy
 import time
 
+
 def swap(pos1, pos2, table):
     temp = table[pos1[0]][pos1[1]]
     table[pos1[0]][pos1[1]] = table[pos2[0]][pos2[1]]
@@ -22,22 +23,30 @@ def printState(arr):
 
         
 
-def fitnessfunction2(sudoku)-> int:# try to minimize(max is 5000)
+def fitnessfunction2(sudoku, helperArray)-> int:# try to minimize(max is 5000)
+    # print("here")
+    # printState(helperArray)
     fitness=0
     for i in range(0,9):
-        Hreaccurance=[0,0,0,0,0,0,0,0,0,0]#first index is not considered so i can start with 1 to 9(Horizontal reaccurance)
-        Vreaccurance=[0,0,0,0,0,0,0,0,0,0]#first index is not considered so i can start with 1 to 9(virtecal reaccurance)
+        
+        Hreaccurance=[None,None,None,None,None,None,None,None,None,None]#first index is not considered so i can start with 1 to 9(Horizontal reaccurance)
+        Vreaccurance=[None,None,None,None,None,None,None,None,None,None]#first index is not considered so i can start with 1 to 9(virtecal reaccurance)
         for j in range(0,9):
-            if Hreaccurance[sudoku[i][j]]>=1 and sudoku[i][j]!=0:
+            if Hreaccurance[sudoku[i][j]] != None and sudoku[i][j]!=0:
+                if helperArray[i][j] != 0 or helperArray[Hreaccurance[sudoku[i][j]][0]][Hreaccurance[sudoku[i][j]][1]] != 0 :
+                    fitness += 500
                 fitness+=1
-            if Vreaccurance[sudoku[j][i]]>=1 and sudoku[j][i]!=0:
+            if Vreaccurance[sudoku[j][i]] != None and sudoku[j][i]!=0:  
+                if helperArray[j][i] != 0 or helperArray[Vreaccurance[sudoku[j][i]][0]][Vreaccurance[sudoku[j][i]][1]] != 0 :
+                    fitness += 500
                 fitness+=1
-            Hreaccurance[sudoku[i][j]]+=1
-            Vreaccurance[sudoku[j][i]]+=1
+            Hreaccurance[sudoku[i][j]]= (i,j)
+            Vreaccurance[sudoku[j][i]] = (j,i)
     return 5000-fitness
 
 class State:
-    def __init__(self, table):
+    def __init__(self, table, helperArray):
+        self.helperArray = helperArray
         self.rowCount = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -73,7 +82,7 @@ class State:
                 self.rowCount[i][self.table[i][j]] +=1
                 self.colCount[j][self.table[i][j]] +=1
                 
-        self.score = fitnessfunction2(self.table)
+        self.score = fitnessfunction2(self.table, self.helperArray)
         
         
     def swap(self, pos1 , pos2):
@@ -96,5 +105,5 @@ class State:
         
         
         swap(pos1, pos2, self.table)
-        self.score = fitnessfunction2(self.table)
+        self.score = fitnessfunction2(self.table, self.helperArray)
         

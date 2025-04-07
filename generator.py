@@ -123,7 +123,7 @@ def generateCase():
     random.seed()
 
     # Set the number of empty cells
-    k = random.randint(30, 40)
-    # k = 60
+    # k = random.randint(30, 40)
+    k = 45
     sudoku = sudokuGenerator(k)
     return sudoku

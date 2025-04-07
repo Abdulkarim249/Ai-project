@@ -7,26 +7,26 @@ import multiprocessing
 from State import State
 import numpy as np
 helperArray = [
-[0 ,5 ,4 ,6 ,1 ,0 ,8 ,0 ,9 ,],
+[0 ,5 ,0 ,6 ,0 ,0 ,8 ,0 ,9 ,],
 [8 ,7 ,9 ,0 ,4 ,0 ,2 ,6 ,0 ,],
 [6 ,2 ,0 ,0 ,0 ,0 ,4 ,0 ,0 ,],
 [0 ,0 ,0 ,1 ,0 ,6 ,0 ,0 ,8 ,],
-[0 ,4 ,5 ,2 ,8 ,0 ,6 ,1 ,3 ,],
-[1 ,0 ,0 ,4 ,9 ,0 ,7 ,5 ,2 ,],
+[0 ,4 ,5 ,2 ,0 ,0 ,6 ,1 ,3 ,],
+[1 ,0 ,0 ,4 ,9 ,0 ,0 ,0 ,2 ,],
 [4 ,0 ,3 ,8 ,0 ,1 ,0 ,0 ,7 ,],
 [0 ,0 ,8 ,7 ,0 ,0 ,0 ,0 ,6 ,],
 [0 ,1 ,0 ,0 ,6 ,0 ,3 ,0 ,4 ,],
 ]
-bestState = State( [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                ])
+# bestState = State( [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+#                 ])
 # answerLock = threading.Lock()
 def swap(pos1, pos2, table):
     temp = table[pos1[0]][pos1[1]]
@@ -48,7 +48,7 @@ def printState(arr):
 
         
 
-def fitnessfunction2(sudoku)-> int:# try to minimize(max is 5000)
+def fitnessfunction2(sudoku, helperArray)-> int:# try to minimize(max is 5000)
     fitness=0
     for i in range(0,9):
         Hreaccurance=[0,0,0,0,0,0,0,0,0,0]#first index is not considered so i can start with 1 to 9(Horizontal reaccurance)
@@ -63,7 +63,58 @@ def fitnessfunction2(sudoku)-> int:# try to minimize(max is 5000)
     return 5000-fitness
 
 
+def addInference():
         
+    poss = np.ones((9, 9, 10))
+    for i in range(9):
+        for j in range(9):
+            if(helperArray[i][j] != 0):
+                numm = helperArray[i][j]
+                blockRow , blockCol = i//3 * 3 , j //3 * 3
+                for k in range(9):
+                
+                    poss[i][k][numm] = 0
+                    
+                for k in range(9):
+                    poss[k][j][numm] = 0
+                    
+                for k in range(blockRow, blockRow + 3):
+                    for h in range(blockCol , blockCol + 3):
+                        
+                        # print(k, h, numm)
+                        poss[k][h][numm] == 0
+
+
+    fl = 0
+    while fl == 0:
+        fl = 1               
+        for i in range(9):
+            for j in range(9):
+                if(helperArray[i][j] != 0):
+                    continue
+                poss[i][j][0] = 0
+                ones = 0
+                nums = None
+                for numm in range(10):
+                    if(poss[i][j][numm] == 1):
+                        ones += 1
+                        nums = numm
+                        
+                if(ones == 1):
+                    fl = 0
+                    helperArray[i][j] = nums
+                    blockRow , blockCol = i//3 * 3 , j //3 * 3
+                    for k in range(9):
+                        poss[i][k][nums] = 0
+                        
+                    for k in range(9):
+                        poss[k][j][nums] = 0
+                        
+                    for k in range(blockRow, blockRow + 3):
+                        for h in range(blockCol , blockCol + 3):
+                            poss[k][h][nums] == 0
+                        
+                    print("yesss")       
                 
         
         
@@ -81,72 +132,29 @@ class GA:
         self.helperArray= helperArray
         printState(self.helperArray)
         print()
-        self.addInference()
         printState(self.helperArray)
         
 
 
     
         
-    def addInference(self):
-        # pass
-        poss = np.ones((9, 9, 10))
-        for i in range(9):
-            for j in range(9):
-                if(self.helperArray[i][j] != 0):
-                    numm = self.helperArray[i][j]
-                    blockRow , blockCol = i//3 * 3 , j //3 * 3
-                    for k in range(9):
-                    
-                        poss[i][k][numm] = 0
-                        
-                    for k in range(9):
-                        poss[k][j][numm] = 0
-                        
-                    for k in range(blockRow, blockRow + 3):
-                        for h in range(blockCol , blockCol + 3):
-                            
-                            # print(k, h, numm)
-                            poss[k][h][numm] == 0
-        
-        
-        fl = 0
-        while fl == 0:
-            fl = 1               
-            for i in range(9):
-                for j in range(9):
-                    if(self.helperArray[i][j] != 0):
-                        continue
-                    poss[i][j][0] = 0
-                    ones = 0
-                    nums = None
-                    for numm in range(10):
-                        if(poss[i][j][numm] == 1):
-                            ones += 1
-                            nums = numm
-                            
-                    if(ones == 1):
-                        fl = 0
-                        self.helperArray[i][j] = nums
-                        blockRow , blockCol = i//3 * 3 , j //3 * 3
-                        for k in range(9):
-                            poss[i][k][nums] = 0
-                            
-                        for k in range(9):
-                            poss[k][j][nums] = 0
-                            
-                        for k in range(blockRow, blockRow + 3):
-                            for h in range(blockCol , blockCol + 3):
-                                poss[k][h][nums] == 0
-                            
-                        print("yesss")
+    
                         
                     
 
     def createPopulation(self, size):#return 3D array
         population=[]
         for i in range(0,size):
-            population.insert(i,self.genrate())
+            while True:
+                state = self.genrate()
+                fl = True
+                for st in population:
+                    if(state.table == st.table):
+                        fl = False
+                if(fl):
+                    population.append(self.genrate())
+                    break
+            
 
         return population
 
@@ -168,7 +176,7 @@ class GA:
                             num=self.helperArray[3*i+k][3*j+kk]
                             population[3*i+k].insert(3*j+kk,num)
                             
-        return State(population)
+        return State(population, self.helperArray)
 
     def checkHelperArray(self, numbers,i,j):#return valuse in the sub array
         for k in range(0,3):
@@ -194,7 +202,7 @@ class GA:
                     child1[i][j]=child2[i][j]
                     child2[i][j]=temp
                     
-        return State(child1),State(child2)
+        return State(child1, self.helperArray),State(child2, self.helperArray)
 
     def mutaion(self, child):
         for i in range(0,3):
@@ -233,7 +241,7 @@ class GA:
     def main(self, queue):
         print("suii")
         # global answerLock
-        global bestState
+        # global bestState
 
         population = self.createPopulation(self.POPULATION_SIZE)
         cnt = 0
@@ -292,26 +300,20 @@ class GA:
             
             
             # for state in population:
-            #     if(random.random() < self.PM2):
-                    
+            #     if(random.random() < self.PM2):    
             #         self.mutaion(state)
                 
                 
             population.sort(key = lambda x: -x.score)
+            newPopulation = []
+            newPopulation.append(population[0])
+            for i in range(1, len(population)):
+                if(self.POPULATION_SIZE > len(newPopulation) and population[i].table != population[i - 1].table):
+                    newPopulation.append(population[i])
+                    
+            
             if(cnt % 100 == 0):
                 print(population[0].score)
-            # while(population[0].score == 4996):
-                
-            #     printState(population[0].table)
-            #     print(fitnessfunction3(population[0]))
-            #     population[0].fitnessfunction2()
-            #     # return population[0]
-            # if(population[0].score < 5000):
-            #     for i in range(self.POPULATION_SIZE):
-            #         if(population[i].score == 4996):
-            #             printState(population[i].table)
-            #             print(fitnessfunction3(population[i]))
-                        # if(population)
                         
                 
             
@@ -322,9 +324,8 @@ class GA:
         
         
         
-# gr = [[4, 5, 1, 2, 3, 7, 8, 9, 6], [2, 7, 6, 1, 8, 9, 3, 4, 5], [3, 8, 9, 5, 6, 4, 1, 2, 7], [5, 1, 2, 3, 7, 8, 9, 6, 4], [6, 3, 8, 9, 4, 2, 5, 7, 1], [7, 9, 4, 6, 1, 5, 2, 3, 8], [8, 4, 5, 7, 9, 3, 6, 1, 2], [9, 6, 7, 8, 2, 1, 4, 5, 3], [1, 2, 3, 4, 5, 6, 7, 8, 9]]
-# print(fitnessfunction2(gr))
 def solve(helperArray):
+    addInference()
     queue = multiprocessing.Queue()
     workers = [ None,None ,None ,None ,None]
     processes = [ None,None ,None ,None ,None]
@@ -332,7 +333,6 @@ def solve(helperArray):
         print("process", i)
         workers[i] = GA(helperArray)
         processes[i] = multiprocessing.Process(target = workers[i].main , args = (queue,))
-        # time.sleep(1)
         processes[i].start()
         
     result = queue.get()
@@ -347,7 +347,6 @@ def solve(helperArray):
     return result.table
         
 if __name__ == '__main__':
-    # freeze.support()    
     multiprocessing.set_start_method('fork')  
     times = []
     for a in range(1):
@@ -355,10 +354,8 @@ if __name__ == '__main__':
         # helperArray = generator.generateCase()
         print(helperArray)
         solve(helperArray)
-        state = bestState
-        
-        # printState(state.table)
         end_time = time.time() * 1000
-        times.append(end_time- start_time  )
+        times.append(end_time - start_time )
+        
     print(times)
     
