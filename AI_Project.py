@@ -74,7 +74,22 @@ def drawBoard():
         pg.draw.line(screen, BLACK, (i * CELL_SIZE, 0), (i * CELL_SIZE, WIDTH), thickness)  # Vertical lines
     
     pg.display.update()
- 
+
+def draw_numbers0(mode=0):
+    """Draws the numbers on the Sudoku board"""
+    #screen.fill(WHITE)
+    drawBoard()
+    for row in range(9):
+        for col in range(9):
+            if sudoku_grid[row][col] != 0:
+                text = pg.font.Font(None, 48).render(str(sudoku_grid[row][col]), True, BLACK)
+                screen.blit(text, (col * CELL_SIZE + 18, row * CELL_SIZE + 15))  # Positioning text
+                pg.display.update()
+        if(mode==1):
+            frameRate.tick(7)#change how fast the number appear
+        else:
+            frameRate.tick(90)
+
 def draw_numbers(mode=0):
     """
     Update only the cells that were originally empty.
@@ -84,8 +99,6 @@ def draw_numbers(mode=0):
     for row in range(9):
         for col in range(9):
             if OG_grid[row][col] == 0:
-                # Clear the cell first
-                pg.draw.rect(screen, EMPTY_CELL, (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE))
                 # Draw the new number if one is present
                 if sudoku_grid[row][col] != 0:
                     text = pg.font.Font(None, 48).render(str(sudoku_grid[row][col]), True, BLUE)
@@ -176,7 +189,7 @@ def main():
     sudoku_grid = copy.deepcopy(OG_grid)
     screen.fill(WHITE)
     drawBoard()
-    draw_numbers()
+    draw_numbers0()
     
     # Main game loop
     slider_active = False
@@ -207,16 +220,16 @@ def main():
 
                 
                 elif solve_bt_button.collidepoint(mouse_pos):
-                    Backtracking.solve(sudoku_grid)
+                    sudoku_grid=Backtracking.solve(sudoku_grid)
                     drawBoard()           # Redraw the board background and grid lines
                     draw_fixed_numbers()  # Redraw the fixed (given) numbers
-                    draw_numbers()        # Redraw all the numbers (which now includes the solved cells)
+                    draw_numbers(1)        # Redraw all the numbers (which now includes the solved cells)
                                 
                 elif solve_ga_button.collidepoint(mouse_pos):
                     sudoku_grid = GA.solve(sudoku_grid)
                     drawBoard()           # Redraw the board background and grid lines
                     draw_fixed_numbers()  # Redraw the fixed numbers
-                    draw_numbers()        # Redraw all numbers
+                    draw_numbers(1)        # Redraw all numbers
 
 
             
