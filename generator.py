@@ -123,7 +123,7 @@ def generateCase(difficulty=35):
     random.seed()
 
 
-    k = difficulty
-    # k = 60
+    # k = difficulty
+    k = 45
     sudoku = sudokuGenerator(k)
     return sudoku

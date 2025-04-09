@@ -1,7 +1,7 @@
 import math
 import copy
 import time
-
+HELPER_PENALTY = 500
 
 def swap(pos1, pos2, table):
     temp = table[pos1[0]][pos1[1]]
@@ -34,15 +34,15 @@ def fitnessfunction2(sudoku, helperArray)-> int:# try to minimize(max is 5000)
         for j in range(0,9):
             if Hreaccurance[sudoku[i][j]] != None and sudoku[i][j]!=0:
                 if helperArray[i][j] != 0 or helperArray[Hreaccurance[sudoku[i][j]][0]][Hreaccurance[sudoku[i][j]][1]] != 0 :
-                    fitness += 500
+                    fitness += HELPER_PENALTY
                 fitness+=1
             if Vreaccurance[sudoku[j][i]] != None and sudoku[j][i]!=0:  
                 if helperArray[j][i] != 0 or helperArray[Vreaccurance[sudoku[j][i]][0]][Vreaccurance[sudoku[j][i]][1]] != 0 :
-                    fitness += 500
+                    fitness += HELPER_PENALTY
                 fitness+=1
             Hreaccurance[sudoku[i][j]]= (i,j)
             Vreaccurance[sudoku[j][i]] = (j,i)
-    return 5000-fitness
+    return 5000000-fitness
 
 class State:
     def __init__(self, table, helperArray):
