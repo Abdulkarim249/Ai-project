@@ -5,6 +5,7 @@ import Backtracking
 import copy
 import GA
 import threading
+import time
 pg.init()
 
 difficulty = 35  # Default number of empty squares
@@ -30,6 +31,11 @@ pg.display.set_caption("Sudoku")
 screen.fill
 frameRate=pg.time.Clock()
 
+
+bt_thread : threading.Thread =  threading.Thread()
+ga_thread : threading.Thread =  threading.Thread()
+stop_event : threading.Event =  threading.Event()
+g_lock: threading.Lock = threading.Lock()
 
 OG_grid = [
     [5, 3, 0, 0, 7, 0, 0, 0, 0],
@@ -165,16 +171,42 @@ def draw_fixed_numbers():
             
 def solver(function):
     global sudoku_grid
-    sudoku_grid = function(sudoku_grid)
+    global stop_event
+    stop_event.clear()
+    sudoku_grid = function(sudoku_grid, stop_event)
+    if(stop_event.is_set()): 
+        return 
+    g_lock.acquire()
     drawBoard()           # Redraw the board background and grid lines
     draw_fixed_numbers()  # Redraw the fixed numbers
     draw_numbers(1)        # Redraw all numbers
+    g_lock.release()
+    
+def killThreads():
+    stop_event.set()
+    
+    if ga_thread.is_alive():
+        print("ga alive")
+        ga_thread.join()
+    else:
+        print("no wayyyyyy")
+        
+    print("hmmmmmm")
+        
+
+    
+    if bt_thread.is_alive():
+        bt_thread.join()
+
+
+
 
 def main():
     global sudoku_grid
     global OG_grid
     global difficulty
     
+    g_lock.acquire()
     # Create a more sophisticated UI with rounded buttons
     generate_button = pg.Rect(30, 610, 256, 40)
     solve_bt_button = pg.Rect(320, 610, 250, 40)
@@ -196,11 +228,14 @@ def main():
     screen.fill(WHITE)
     drawBoard()
     draw_numbers0()
+    g_lock.release()
     
     # Main game loop
     slider_active = False
     while True:
         for event in pg.event.get():
+            
+            g_lock.acquire()
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
@@ -208,7 +243,7 @@ def main():
             # Handle mouse events    
             if event.type == pg.MOUSEBUTTONDOWN:
                 mouse_pos = pg.mouse.get_pos()
-    
+
             # Check if clicked on slider (new coordinates in the UI panel)
                 slider_rect = pg.Rect(30, 670, 256, 20)
                 if slider_rect.collidepoint(mouse_pos):
@@ -216,6 +251,7 @@ def main():
                 
                 # Check other button clicks
                 if generate_button.collidepoint(mouse_pos):
+                    killThreads()
                     # Clear only the board area (top 600 pixels)
                     pg.draw.rect(screen, BOARD_BG, (0, 0, WIDTH, 600))
                     # Generate a new puzzle based on the chosen difficulty
@@ -226,10 +262,16 @@ def main():
 
                 
                 elif solve_bt_button.collidepoint(mouse_pos):
-                    solver(Backtracking.solve)
+                    killThreads()
+                    bt_thread = threading.Thread(target = solver, args = (Backtracking.solve,))
+                    bt_thread.start()
                                 
                 elif solve_ga_button.collidepoint(mouse_pos):
-                    solver(GA.solve)
+                    killThreads()
+                    ga_thread = threading.Thread(target = solver, args = (GA.solve,))
+                    ga_thread.start()
+            
+            
 
 
             
@@ -244,7 +286,10 @@ def main():
             # Handle mouse button release
             elif event.type == pg.MOUSEBUTTONUP:
                 slider_active = False
+                
+            g_lock.release()
         
+        g_lock.acquire()
         # Draw UI elements
         mouse_pos = pg.mouse.get_pos()
         
@@ -282,6 +327,7 @@ def main():
         draw_difficulty_slider()
         
         pg.display.update()
+        g_lock.release()
 
 if __name__=="__main__":
     

@@ -1,7 +1,7 @@
 import math
 import copy
 import time
-HELPER_PENALTY = 500
+HELPER_PENALTY = 0
 
 def swap(pos1, pos2, table):
     temp = table[pos1[0]][pos1[1]]

@@ -1,6 +1,7 @@
 import generator
 import copy
 
+
 # sudoku_grid = [
 #     [1, 4, 0, 0, 0, 0, 0, 0, 6],
 #     [0, 0, 0, 0, 2, 0, 0, 0, 0],
@@ -43,22 +44,25 @@ def isPossible(sudoku_grid,row,column,number):
                 return False
     return True
 
-def solve2(sudoku_grid):
+def solve2(sudoku_grid, stop_event):
+    # if(stop_event.is_set()): 
+    #     return True
+    
     for i in range(0,9):
         for j in range(0,9):
             if sudoku_grid[i][j]==0:
                 for k in range(1,10):
                     if isPossible(sudoku_grid,i,j,k):
                         sudoku_grid[i][j]=k
-                        if solve2(sudoku_grid):
+                        if solve2(sudoku_grid, stop_event):
                             return True
                         sudoku_grid[i][j]=0
                 return False
     return True
 
-def solve(sudoku_grid):
+def solve(sudoku_grid, stop_event):
     s=copy.deepcopy(sudoku_grid)
-    solve2(s)
+    solve2(s, stop_event)
     return s
 
 def printa(sudoku_grid1):
