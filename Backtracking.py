@@ -45,8 +45,8 @@ def isPossible(sudoku_grid,row,column,number):
     return True
 
 def solve2(sudoku_grid, stop_event):
-    # if(stop_event.is_set()): 
-    #     return True
+    if(stop_event.is_set()): 
+        return True
     
     for i in range(0,9):
         for j in range(0,9):
