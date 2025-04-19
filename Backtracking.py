@@ -1,5 +1,6 @@
 import generator
 import copy
+import GA
 
 
 # sudoku_grid = [
@@ -46,7 +47,10 @@ def isPossible(sudoku_grid,row,column,number):
 
 def solve2(sudoku_grid, stop_event):
     if(stop_event.is_set()): 
+        print("settt")
         return True
+    
+    # print("Not set")
     
     for i in range(0,9):
         for j in range(0,9):
@@ -61,8 +65,14 @@ def solve2(sudoku_grid, stop_event):
     return True
 
 def solve(sudoku_grid, stop_event):
+    GA.printState(sudoku_grid)
+    print(stop_event.is_set())
     s=copy.deepcopy(sudoku_grid)
     solve2(s, stop_event)
+    print("Solution is")
+    GA.printState(s)
+    if(not check(s)):
+        return sudoku_grid
     return s
 
 def printa(sudoku_grid1):
