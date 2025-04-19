@@ -10,7 +10,7 @@ pg.init()
 
 difficulty = 35  # Default number of empty squares
 min_difficulty = 25  # Minimum number of empty cells (easier)
-max_difficulty = 60  # Maximum number of empty cells (harder)
+max_difficulty = 70  # Maximum number of empty cells (harder)
 
 WIDTH,HEIGHT=600,750
 CELL_SIZE=WIDTH//9
